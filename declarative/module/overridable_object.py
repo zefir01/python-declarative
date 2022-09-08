@@ -2,13 +2,15 @@
 """
 """
 import types
+from abc import ABCMeta, abstractmethod
 
-from .properties import HasDeclaritiveAttributes
-
-from .utilities.representations import SuperBase
+from .. import mproperty
+from ..properties import HasDeclaritiveAttributes
+from ..utilities.representations import SuperBase
 
 
 class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
+    __metaclass__ = ABCMeta
     """
     """
     _overridable_object_save_kwargs = False
@@ -26,11 +28,11 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 continue
 
             if isinstance(
-                parent_desc, (
-                    types.MethodType,
-                    staticmethod,
-                    classmethod
-                )
+                    parent_desc, (
+                            types.MethodType,
+                            staticmethod,
+                            classmethod
+                    )
             ):
                 raise ValueError(
                     (
@@ -48,6 +50,10 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 self.__boot_dict__[key] = obj
         return kwargs_unmatched
 
+    @mproperty
+    def child_registry(self):
+        return set()
+
     def __init__(self, **kwargs):
         """
         """
@@ -61,14 +67,16 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 ).format(self.__class__.__name__, list(kwargs_unmatched.keys()))
             )
 
-        #now run the __mid_init__ before all of the declarative arguments trigger
+        # now run the __mid_init__ before all of the declarative arguments trigger
         self.__mid_init__()
-        super(OverridableObject, self).__init__()
-        #print("OO: ", self)
+        #super(OverridableObject, self).__init__()
+        # print("OO: ", self)
         return
+
+    def init(self):
+        super(OverridableObject, self).__init__()
 
     def __mid_init__(self):
         """
         """
         return
-

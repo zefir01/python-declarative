@@ -18,11 +18,6 @@ from .memoized import (
     memoized_class_property,
     mproperty,
     dproperty,
-    mproperty_plain,
-    dproperty_plain,
-    mproperty_fns,
-    dproperty_fns,
-    mfunction,
 )
 
 from .memoized_adv import (
