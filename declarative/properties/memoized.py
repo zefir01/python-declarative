@@ -4,15 +4,6 @@
 
 from ..abstract.module import Module, ResourceFunction
 from ..abstract.resource import Resource
-from ..utilities.unique import (
-    unique_generator
-)
-
-_UNIQUE_local = unique_generator()
-
-
-class AccessError(Exception):
-    pass
 
 
 class ClassMemoizedDescriptor(object):

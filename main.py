@@ -10,13 +10,6 @@ class Child(Resource, ABC):
     def __init__(self, id=None):
         self.id = id
 
-def decorator_factory(argument):
-    def decorator(function):
-        def wrapper(*args, **kwargs):
-            result = function(*args, **kwargs)
-            return result
-        return wrapper
-    return decorator
 
 class Parent(declarative.Module):
 
@@ -34,12 +27,13 @@ class Parent(declarative.Module):
         )
         return child
 
-    @declarative.resource_pass_errors
+    @declarative.resource
+    #@declarative.resource_pass_errors
     def c2(self, prev: Optional[Resource]) -> Child:
         child = Child(
             id=2,
         )
-        raise Exception("Custom error")
+        #raise Exception("Custom error")
         return child
 
 

@@ -11,18 +11,6 @@ from __future__ import (
 import abc
 
 from ..utilities import SuperBase
-from ..utilities.future_from_2 import with_metaclass
-
-
-class PropertyTransforming(with_metaclass(abc.ABCMeta, object)):
-    @abc.abstractmethod
-    def construct(
-        self,
-        parent,
-        name,
-    ):
-        return
-
 
 #TODO rename PropertyException
 class InnerException(Exception):

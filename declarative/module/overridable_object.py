@@ -2,11 +2,11 @@
 """
 """
 import types
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 from .. import resource
 from ..properties import HasDeclaritiveAttributes
-from ..utilities.representations import SuperBase
+from ..utilities import SuperBase
 
 
 class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):

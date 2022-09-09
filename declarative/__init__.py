@@ -6,14 +6,7 @@ from .properties import (
     HasDeclaritiveAttributes,
     resource,
     resource_pass_errors,
-    PropertyTransforming,
     PropertyAttributeError,
-    group_dproperty,
-    group_mproperty,
-    mproperty_adv,
-    dproperty_adv,
-    mproperty_adv_group,
-    dproperty_adv_group,
 )
 
 
@@ -24,17 +17,6 @@ from .module.module import (
     Module,
 )
 
-from .metaclass import (
-    AutodecorateMeta,
-    Autodecorate,
-    AttrExpandingObject,
-    GetSetAttrExpandingObject,
-)
-
-from .utilities.unique import (
-    NOARG,
-    unique_generator,
-)
 
 from .version import (
     version,
