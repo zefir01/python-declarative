@@ -4,7 +4,7 @@
 import types
 from abc import ABCMeta, abstractmethod
 
-from .. import mproperty
+from .. import resource
 from ..properties import HasDeclaritiveAttributes
 from ..utilities.representations import SuperBase
 
@@ -50,7 +50,7 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 self.__boot_dict__[key] = obj
         return kwargs_unmatched
 
-    @mproperty
+    @resource
     def child_registry(self):
         return set()
 

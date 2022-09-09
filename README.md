@@ -26,15 +26,17 @@ verbose with the decorator boilerplate.
 ```python
 import declarative
 
+
 class Child(object):
     id = None
 
+
 class Parent(object):
-    @declarative.mproperty
+    @declarative.resource
     def child_registry(self):
         return set()
 
-    @declarative.mproperty
+    @declarative.resource
     def c1(self):
         print("made Parent.c1")
         child = Child()
@@ -42,7 +44,7 @@ class Parent(object):
         self.child_registry.add(child)
         return child
 
-    @declarative.mproperty
+    @declarative.resource
     def c2(self):
         print("made Parent.c2")
         child = Child()
@@ -50,11 +52,12 @@ class Parent(object):
         self.child_registry.add(child)
         return child
 
+
 parent = Parent()
 parent.c1
-#>> made Parent.c1
+# >> made Parent.c1
 parent.c2
-#>> made Parent.c2
+# >> made Parent.c2
 print(parent.child_registry)
 ```
 
@@ -65,32 +68,34 @@ Ok, so now as the child object attributes are accessed, they are also registered
 ```python
 import declarative
 
+
 class Child(declarative.OverridableObject):
     id = None
 
+
 class Parent(declarative.OverridableObject):
-    @declarative.mproperty
+    @declarative.resource
     def child_registry(self):
         return set()
 
     @declarative.dproperty
-    def c1(self, val = None):
+    def c1(self, val=None):
         if val is None:
             child = Child(
-                id = 1,
+                id=1,
             )
             print("made Parent.c1")
         else:
             print("Using outside c1")
             child = val
-      
+
         self.child_registry.add(child)
         return child
 
     @declarative.dproperty
     def c2(self):
         child = Child(
-            id = 2,
+            id=2,
         )
         print("made Parent.c2")
         self.child_registry.add(child)
@@ -99,16 +104,17 @@ class Parent(declarative.OverridableObject):
     @declarative.dproperty
     def c2b(self):
         child = Child(
-            id = self.c2.id + 0.5
+            id=self.c2.id + 0.5
         )
         print("made Parent.c2b")
         self.child_registry.add(child)
         return child
 
+
 parent = Parent()
-#>> made Parent.c2
-#>> made Parent.c2b
-#>> made Parent.c1
+# >> made Parent.c2
+# >> made Parent.c2b
+# >> made Parent.c1
 print(parent.child_registry)
 ```
 
@@ -137,6 +143,7 @@ want to canonicalize the inputs to use a numpy representation.
 ```python
 import declarative
 
+
 class MultiFunction(declarative.OverridableObject):
     @declarative.dproperty
     def input_A(self, val):
@@ -148,19 +155,20 @@ class MultiFunction(declarative.OverridableObject):
     def input_B(self, val):
         return numpy.asarray(val)
 
-    @declarative.mproperty
+    @declarative.resource
     def output_A(self):
         #note usage of mproperty. This will only be computed if accessed, not at construction
         return self.input_A + self.input_B
 
-    @declarative.mproperty
+    @declarative.resource
     def output_B(self):
         #note the use of incremental computing into output_A
         return self.input_A * self.input_B - self.output_A
 
+
 data = MultiFunction(
-    input_A = [1,2,3],
-    input_B = [4,5,6],
+    input_A=[1, 2, 3],
+    input_B=[4, 5, 6],
 )
 print(data.output_A)
 ```

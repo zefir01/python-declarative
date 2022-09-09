@@ -16,8 +16,8 @@ from .bases import (
 
 from .memoized import (
     memoized_class_property,
-    mproperty,
-    dproperty,
+    resource,
+    resource_pass_errors,
 )
 
 from .memoized_adv import (

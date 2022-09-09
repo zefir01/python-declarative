@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 """
-from .bases import (
-    InnerException,
-)
+
 from ..abstract.module import Module, ResourceFunction
+from ..abstract.resource import Resource
 from ..utilities.unique import (
-    NOARG,
     unique_generator
 )
 
@@ -38,6 +36,32 @@ class ClassMemoizedDescriptor(object):
 memoized_class_property = ClassMemoizedDescriptor
 
 
+class AccessFailedObjectException(Exception):
+    name = None
+
+    def __init__(self, name):
+        self.name = name
+        super(AccessFailedObjectException, self).__init__("ERROR: Access to failed object: " + name)
+
+
+class Wrapper:
+    name: str = None
+    value = None
+    error: Exception = None
+
+    def __init__(self, name, value, error=None):
+        self.name = name
+        self.value = value
+        self.error = error
+        if self.error is not None:
+            print("Warning, object failed: " + self.name)
+
+    def __call__(self, *args, **kwargs):
+        if self.error is not None:
+            raise AccessFailedObjectException(self.name)
+        return self.value
+
+
 class MemoizedDescriptor(object):
     """
     wraps a member function just as :obj:`property` but saves its value after evaluation
@@ -48,80 +72,83 @@ class MemoizedDescriptor(object):
 
     def __init__(
             self,
-            fget,
-            name=None,
-            doc=None,
+            fget: ResourceFunction,
+            use_prev=False
     ):
         self.fget = fget
-        if name is None:
-            self.__name__ = fget.__name__
-        else:
-            self.__name__ = name
-        if doc is None:
-            self.__doc__ = fget.__doc__
-        else:
-            self.__doc__ = doc
+        self.__name__ = fget.__name__
+        self._use_prev = use_prev
 
     def __get__(self, obj: Module, cls):
         if obj is None:
             return self
+
+        def register(res):
+            t = obj.child_registry
+            if isinstance(t, Wrapper):
+                t().add(res)
+            else:
+                t.add(res)
+            if issubclass(res.__class__, Resource):
+                result.parent = obj
+                result.name = obj.name + "." + self.__name__
+            if issubclass(res.__class__, Module):
+                result.init()
+            obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, res)
+
         result = obj.__dict__.get(self.__name__, None)
         if result is None:
             prev = obj.store.get_res()
             if self.__name__ != "child_registry":
                 print("Creating " + obj.name + "." + self.__name__)
             try:
-                if self.fget.__code__.co_argcount == 2:
+                if self.__name__ == "child_registry":
+                    result = self.fget(obj)
+                    obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, result)
+                elif self.fget.__code__.co_argcount == 2:
                     result = self.fget(obj, prev)
-                    obj.child_registry.add(result)
-                    result.parent = obj
-                    result.name = obj.name + "." + self.__name__
+                    register(result)
                 else:
                     result = self.fget(obj)
-                if issubclass(result.__class__, Module):
-                    result.init()
+                    register(result)
             except Exception as e:
-                if self.fget.__code__.co_argcount == 2 and prev is not None and self._use_prev:
-                    obj.child_registry.add(prev)
+                if self.__name__ != "child_registry" and prev is not None and self._use_prev:
                     result = prev
-                    print("Error in: {0}.{1}, using previous value".format(obj.name, self.__name__))
+                    register(result)
                     print(e)
+                    print("Error in: {0}.{1}, using previous value".format(obj.name, self.__name__))
                 else:
                     obj.store.error_res("{0}.{1}".format(obj.name, self.__name__))
-                    print("Error in: {0}.{1}".format(obj.name, self.__name__))
+                    # print("Error in: {0}.{1}".format(obj.name, self.__name__))
                     print(e)
+                    obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, result, e)
+                    return None
 
-            if __debug__:
-                if result is NOARG:
-                    raise InnerException("Return result was NOARG (usu)")
-
-            # print("SET Value for attr ({0}) in {1}".format(self.__name__, id(obj)))
-            obj.__dict__[self.__name__] = result
         return result
 
 
-def mproperty(
+def resource(
         __func: ResourceFunction,
         **kwargs
 ):
-    def wrap(func):
+    def wrap(func: ResourceFunction):
         desc = MemoizedDescriptor(
-            func,
-            **kwargs
+            func
         )
         return desc
 
-    if __func is not None:
-        return wrap(__func)
-    else:
-        return wrap
+    return wrap(__func)
 
 
-def dproperty(
+def resource_pass_errors(
         __func: ResourceFunction,
         **kwargs
 ):
-    return mproperty(
-        __func=__func,
-        **kwargs
-    )
+    def wrap(func: ResourceFunction):
+        desc = MemoizedDescriptor(
+            func,
+            use_prev=True
+        )
+        return desc
+
+    return wrap(__func)

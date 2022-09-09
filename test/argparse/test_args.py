@@ -9,7 +9,7 @@ from __future__ import (division, print_function, absolute_import)
 
 from declarative import (
     OverridableObject,
-    mproperty,
+    resource,
     NOARG,
 )
 
@@ -34,7 +34,7 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
     """
 
     @ARG.argument(['-a', '--abc'])
-    @mproperty
+    @resource
     def atest(self, val = NOARG):
         """
         Test the documentation.
@@ -44,7 +44,7 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
         return val
 
     @ARG.argument(['-b', '--btest'], group = '__tgroup__')
-    @mproperty
+    @resource
     def btest(self, val = NOARG):
         """
         Test the documentation.
@@ -54,7 +54,7 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
         return val
 
     @ARG.argument(['-c', '--ctest'], group = '__tgroup_ME__')
-    @mproperty
+    @resource
     def ctest(self, val = NOARG):
         """
         Test the documentation.
@@ -64,7 +64,7 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
         return val
 
     @ARG.argument(['-d', '--dtest'], group = '__tgroup_ME__')
-    @mproperty
+    @resource
     def dtest(self, val = NOARG):
         """
         Test the documentation.
@@ -74,7 +74,7 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
         return val
 
     @ARG.store_true(['-e', '--etest'])
-    @mproperty
+    @resource
     def etest(self, val = NOARG):
         """
         Test the documentation.
@@ -84,7 +84,7 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
         return val
 
     @ARG.group(name = 'Test Group')
-    @mproperty
+    @resource
     def __tgroup__(self, val = NOARG):
         """
         Group for testing
@@ -94,7 +94,7 @@ class TArgParse(ARG.OOArgParse, OverridableObject):
         name = 'Test Group2',
         mutually_exclusive = True,
     )
-    @mproperty
+    @resource
     def __tgroup_ME__(self, val = NOARG):
         """
         Group for testing Mutual Exclusivity

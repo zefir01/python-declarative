@@ -8,7 +8,7 @@ from declarative.callbacks import (Callback, callbackmethod)
 
 from declarative import (
     OverridableObject,
-    mproperty,
+    resource,
     NOARG,
 )
 

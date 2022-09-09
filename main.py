@@ -10,40 +10,43 @@ class Child(Resource, ABC):
     def __init__(self, id=None):
         self.id = id
 
+def decorator_factory(argument):
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            result = function(*args, **kwargs)
+            return result
+        return wrapper
+    return decorator
 
 class Parent(declarative.Module):
 
-    @declarative.dproperty
+    @declarative.resource
     def c1(self, prev: Optional[Resource]):
         child = Child(
             id=1,
         )
-        print("made Parent.c1")
         return child
 
-    @declarative.dproperty
+    @declarative.resource
     def c2b(self, prev: Optional[Resource]):
         child = Child(
-            id=self.c2.id + 0.5
+            id=self.c2().id + 0.5
         )
-        print("made Parent.c2b")
         return child
 
-    @declarative.dproperty
-    def c2(self, prev: Optional[Resource]):
+    @declarative.resource_pass_errors
+    def c2(self, prev: Optional[Resource]) -> Child:
         child = Child(
             id=2,
         )
-        raise Exception("Sorry, no numbers below zero")
-        print("made Parent.c2")
+        raise Exception("Custom error")
         return child
 
 
 class Root(declarative.Module):
-    @declarative.dproperty
+    @declarative.resource
     def m1(self, prev: Optional[Module]):
         child = Parent()
-        print("made Parent1.m1")
         return child
 
 

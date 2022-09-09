@@ -14,16 +14,17 @@ class Module(OverridableObject, Module, ABC):
 
     def get_resources(self) -> set:
         resources = set()
-        for r in self.child_registry:
-            if issubclass(r.__class__, Module):
+        for r in self.child_registry():
+            rr = r()
+            if issubclass(rr.__class__, OverridableObject):
                 resources = resources.union(r.get_resources())
             else:
-                resources.add(r)
+                resources.add(rr)
         return resources
 
     def get_errors(self):
         errors = set(self.store.errors)
-        for r in self.child_registry:
+        for r in self.child_registry():
             if issubclass(r.__class__, Module):
                 errors = errors.union(set(r.store.errors))
         return errors

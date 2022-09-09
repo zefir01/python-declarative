@@ -9,7 +9,7 @@ from __future__ import (division, print_function, absolute_import)
 
 from declarative import (
     OverridableObject,
-    mproperty,
+    resource,
     NOARG,
 )
 
@@ -28,14 +28,14 @@ class OOT(OverridableObject):
     """
     Runs the argparse test setup
     """
-    @mproperty
+    @resource
     def A(self, val = NOARG):
         if val is NOARG:
             val = 'A'
         print(val)
         return val
 
-    @mproperty
+    @resource
     def B(self, val = NOARG):
         if val is NOARG:
             val = 'B'
@@ -64,12 +64,12 @@ class TBadAccess(OverridableObject):
     """
     Runs the argparse test setup
     """
-    @mproperty
+    @resource
     def no_args(self):
         print('A')
         return 'A'
 
-    @mproperty
+    @resource
     def bad_set(self):
         None.Test
         return 'B'

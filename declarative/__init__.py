@@ -4,8 +4,8 @@
 """
 from .properties import (
     HasDeclaritiveAttributes,
-    mproperty,
-    dproperty,
+    resource,
+    resource_pass_errors,
     PropertyTransforming,
     PropertyAttributeError,
     group_dproperty,

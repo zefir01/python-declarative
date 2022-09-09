@@ -10,3 +10,6 @@ class Resource:
     @abstractmethod
     def restore(self, json: str):
         pass
+
+    def __call__(self):
+        return self
