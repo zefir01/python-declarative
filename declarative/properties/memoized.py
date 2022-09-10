@@ -47,6 +47,7 @@ class MemoizedDescriptor(object):
         result = obj.__dict__.get(self.__name__, None)
         if result is None:
             print("Creating " + obj.name + "." + self.__name__)
+            prev = obj.store.get_res()
             if check_function(self.fget, Callable[[Module], Any]):
                 pass_prev = False
             elif check_function(self.fget, Callable[[Module, str], Any]) \
@@ -61,13 +62,12 @@ class MemoizedDescriptor(object):
                 raise UnknownMethodSignatureException(obj.name + "." + self.__name__)
             try:
                 if pass_prev:
-                    prev = obj.store.get_res()
                     result = self.fget(obj, prev)
                 else:
                     result = self.fget(obj)
                 register(result)
             except Exception as e:
-                if self.__name__ != "child_registry" and prev is not None and self._use_prev:
+                if prev is not None and self._use_prev:
                     result = prev
                     register(result)
                     print(e)
