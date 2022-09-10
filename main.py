@@ -1,13 +1,14 @@
-from typing import Optional
+from typing import Optional, Callable
 
 import declarative
 from declarative.module.module import Module
+from declarative.properties.utilities import check_function
 
 
 class Parent(declarative.Module):
 
     @declarative.resource
-    def c1(self, prev: Optional[str]):
+    def c1(self):
         return ""
 
     @declarative.resource
@@ -23,7 +24,7 @@ class Parent(declarative.Module):
 
 class Root(declarative.Module):
     @declarative.resource
-    def m1(self, prev: Optional[Module]):
+    def m1(self, prev: Optional[str]):
         # raise Exception("Custom error")
         child = Parent()
         return child
@@ -39,3 +40,5 @@ for r in root.get_resources():
 print("\nErrors:")
 for e in root.get_errors():
     print(e.name, e.error)
+
+

@@ -1,8 +1,19 @@
 # -*- coding: utf-8 -*-
 """
 """
+from typing import Callable, Optional
+
 from declarative.module.module import ResourceFunction, Module
 from declarative.module.wraper import Wrapper
+from declarative.properties.utilities import check_function
+
+
+class UnknownMethodSignatureException(Exception):
+    name = None
+
+    def __init__(self, name):
+        self.name = name
+        super(UnknownMethodSignatureException, self).__init__("ERROR: Unknown method signature: " + name)
 
 
 class MemoizedDescriptor(object):
@@ -37,13 +48,24 @@ class MemoizedDescriptor(object):
         if result is None:
             prev = obj.store.get_res()
             print("Creating " + obj.name + "." + self.__name__)
+            if check_function(self.fget, Callable[[Module], str]):
+                pass_prev = False
+            elif check_function(self.fget, Callable[[Module, str], str]) \
+                    or check_function(self.fget, Callable[[Module, Optional[str]], str]):
+                pass_prev = True
+            elif check_function(self.fget, Callable[[Module], Module]):
+                pass_prev = False
+            elif check_function(self.fget, Callable[[Module, str], Module]) \
+                    or check_function(self.fget, Callable[[Module, Optional[str]], Module]):
+                pass_prev = True
+            else:
+                raise UnknownMethodSignatureException(obj.name + "." + self.__name__)
             try:
-                if self.fget.__code__.co_argcount == 2:
+                if pass_prev:
                     result = self.fget(obj, prev)
-                    register(result)
                 else:
                     result = self.fget(obj)
-                    register(result)
+                register(result)
             except Exception as e:
                 if self.__name__ != "child_registry" and prev is not None and self._use_prev:
                     result = prev
