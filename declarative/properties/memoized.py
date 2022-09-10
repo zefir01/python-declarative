@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
-
-from ..abstract.module import Module, ResourceFunction
-from ..abstract.resource import Resource
+from declarative.module.module import ResourceFunction, Module
+from declarative.module.resource import Resource
+from declarative.module.wraper import Wrapper
 
 
 class ClassMemoizedDescriptor(object):
@@ -27,30 +27,6 @@ class ClassMemoizedDescriptor(object):
 memoized_class_property = ClassMemoizedDescriptor
 
 
-class AccessFailedObjectException(Exception):
-    name = None
-
-    def __init__(self, name):
-        self.name = name
-        super(AccessFailedObjectException, self).__init__("ERROR: Access to failed object: " + name)
-
-
-class Wrapper:
-    name: str = None
-    value = None
-    error: Exception = None
-
-    def __init__(self, name, value, error=None):
-        self.name = name
-        self.value = value
-        self.error = error
-        if self.error is not None:
-            print("Warning, object failed: " + self.name)
-
-    def __call__(self, *args, **kwargs):
-        if self.error is not None:
-            raise AccessFailedObjectException(self.name)
-        return self.value
 
 
 class MemoizedDescriptor(object):
@@ -75,11 +51,6 @@ class MemoizedDescriptor(object):
             return self
 
         def register(res):
-            t = obj.child_registry
-            if isinstance(t, Wrapper):
-                t().add(res)
-            else:
-                t.add(res)
             if issubclass(res.__class__, Resource):
                 result.parent = obj
                 result.name = obj.name + "." + self.__name__
@@ -109,7 +80,6 @@ class MemoizedDescriptor(object):
                     print(e)
                     print("Error in: {0}.{1}, using previous value".format(obj.name, self.__name__))
                 else:
-                    obj.store.error_res("{0}.{1}".format(obj.name, self.__name__))
                     # print("Error in: {0}.{1}".format(obj.name, self.__name__))
                     print(e)
                     obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, result, e)

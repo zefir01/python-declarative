@@ -7,12 +7,6 @@ from __future__ import (
     absolute_import,
 )
 
-from .bases import (
-    HasDeclaritiveAttributes,
-    InnerException,
-    PropertyAttributeError,
-)
-
 from .memoized import (
     memoized_class_property,
     resource,

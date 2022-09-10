@@ -2,8 +2,8 @@ from abc import ABC
 from typing import Optional
 
 import declarative
-from declarative.abstract.module import Module
-from declarative.abstract.resource import Resource
+from declarative.module.module import Module
+from declarative.module.resource import Resource
 
 
 class Child(Resource, ABC):
@@ -33,13 +33,14 @@ class Parent(declarative.Module):
         child = Child(
             id=2,
         )
-        #raise Exception("Custom error")
+        raise Exception("Custom error")
         return child
 
 
 class Root(declarative.Module):
     @declarative.resource
     def m1(self, prev: Optional[Module]):
+        #raise Exception("Custom error")
         child = Parent()
         return child
 
@@ -53,4 +54,4 @@ for r in root.get_resources():
 
 print("\nErrors:")
 for e in root.get_errors():
-    print(e)
+    print(e.name, e.error)

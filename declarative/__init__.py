@@ -3,10 +3,8 @@
 """
 """
 from .properties import (
-    HasDeclaritiveAttributes,
     resource,
     resource_pass_errors,
-    PropertyAttributeError,
 )
 
 
@@ -31,4 +29,4 @@ def first_non_none(*args):
 
 FNN = first_non_none
 
-PropertyAttributeError.__module__ == __name__
+# PropertyAttributeError.__module__ == __name__

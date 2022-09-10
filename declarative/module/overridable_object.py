@@ -2,10 +2,9 @@
 """
 """
 import types
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
-from .. import resource
-from ..properties import HasDeclaritiveAttributes
+from .bases import HasDeclaritiveAttributes
 from ..utilities import SuperBase
 
 
@@ -15,6 +14,10 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
     """
     _overridable_object_save_kwargs = False
     _overridable_object_kwargs = None
+
+    @abstractmethod
+    def name(self):
+        pass
 
     def _overridable_object_inject(self, **kwargs):
         """
@@ -50,10 +53,6 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 self.__boot_dict__[key] = obj
         return kwargs_unmatched
 
-    @resource
-    def child_registry(self):
-        return set()
-
     def __init__(self, **kwargs):
         """
         """
@@ -69,11 +68,12 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
 
         # now run the __mid_init__ before all of the declarative arguments trigger
         self.__mid_init__()
-        #super(OverridableObject, self).__init__()
+        # super(OverridableObject, self).__init__()
         # print("OO: ", self)
         return
 
     def init(self):
+        print("Creating", self.name)
         super(OverridableObject, self).__init__()
 
     def __mid_init__(self):
