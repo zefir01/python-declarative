@@ -46,7 +46,8 @@ class MemoizedDescriptor(object):
 
         result = obj.__dict__.get(self.__name__, None)
         if result is None:
-            print("Creating " + obj.name + "." + self.__name__)
+            name = obj.name + "." + self.__name__
+            print("Creating", name)
             prev = obj.store.get_res()
             if check_function(self.fget, Callable[[Module], Any]):
                 pass_prev = False
@@ -59,7 +60,7 @@ class MemoizedDescriptor(object):
                     or check_function(self.fget, Callable[[Module, Optional[str]], Any]):
                 pass_prev = True
             else:
-                raise UnknownMethodSignatureException(obj.name + "." + self.__name__)
+                raise UnknownMethodSignatureException(name)
             try:
                 if pass_prev:
                     result = self.fget(obj, prev)
@@ -71,11 +72,11 @@ class MemoizedDescriptor(object):
                     result = prev
                     register(result)
                     print(e)
-                    print("Error in: {0}.{1}, using previous value".format(obj.name, self.__name__))
+                    print("Warning: {0} failed, using previous value".format(name))
                 else:
                     # print("Error in: {0}.{1}".format(obj.name, self.__name__))
                     print(e)
-                    obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, result, e)
+                    obj.__dict__[self.__name__] = Wrapper(name, result, e)
                     return None
 
         return result

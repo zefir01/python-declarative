@@ -15,10 +15,10 @@ class Parent(declarative.Module):
     def c2b(self, prev: Optional[str]):
         return self.c2() + ""
 
-    @declarative.resource
-    # @declarative.resource_pass_errors
+    #@declarative.resource
+    @declarative.resource_pass_errors
     def c2(self, prev: Optional[str]) -> str:
-        # raise Exception("Custom error")
+        raise Exception("Custom error")
         return ""
 
 
