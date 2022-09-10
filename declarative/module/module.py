@@ -35,7 +35,7 @@ class Module(OverridableObject, ABC):
             if issubclass(res().__class__, Module):
                 resources = resources.union(res().get_resources())
         if self.parent is None:
-            resources.add(Wrapper(self.name, self))
+            resources.add(Wrapper(self.name, self, None))
         return resources
 
     def get_errors(self):
@@ -47,8 +47,3 @@ class Module(OverridableObject, ABC):
             elif issubclass(r().__class__, Module):
                 errors = errors.union(r().get_errors())
         return errors
-
-
-class ResourceFunction:
-    def __call__(self, module: Module, prev: Optional[str]) -> Optional[str]:
-        pass

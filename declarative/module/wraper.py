@@ -10,11 +10,13 @@ class Wrapper:
     name: str = None
     value = None
     error: Exception = None
+    parent = None
 
-    def __init__(self, name, value, error=None):
+    def __init__(self, name, value, parent, error=None):
         self.name = name
         self.value = value
         self.error = error
+        self.parent = parent
         if self.error is not None:
             print("Warning, object failed: " + self.name)
 

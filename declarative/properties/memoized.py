@@ -3,7 +3,7 @@
 """
 from typing import Callable, Optional, Any
 
-from declarative.module.module import ResourceFunction, Module
+from declarative.module.module import Module
 from declarative.module.wraper import Wrapper
 from declarative.properties.utilities import check_function
 
@@ -26,7 +26,7 @@ class MemoizedDescriptor(object):
 
     def __init__(
             self,
-            fget: ResourceFunction,
+            fget,
             use_prev=False
     ):
         self.fget = fget
@@ -42,7 +42,7 @@ class MemoizedDescriptor(object):
                 result.name = obj.name + "." + self.__name__
                 result.parent = obj
                 result.init()
-            obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, res)
+            obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, res, obj)
 
         result = obj.__dict__.get(self.__name__, None)
         if result is None:
@@ -76,17 +76,17 @@ class MemoizedDescriptor(object):
                 else:
                     # print("Error in: {0}.{1}".format(obj.name, self.__name__))
                     print(e)
-                    obj.__dict__[self.__name__] = Wrapper(name, result, e)
+                    obj.__dict__[self.__name__] = Wrapper(name, result, obj, e)
                     return None
 
         return result
 
 
 def resource(
-        __func: ResourceFunction,
+        __func,
         **kwargs
 ):
-    def wrap(func: ResourceFunction):
+    def wrap(func):
         desc = MemoizedDescriptor(
             func
         )
@@ -96,10 +96,10 @@ def resource(
 
 
 def resource_pass_errors(
-        __func: ResourceFunction,
+        __func,
         **kwargs
 ):
-    def wrap(func: ResourceFunction):
+    def wrap(func):
         desc = MemoizedDescriptor(
             func,
             use_prev=True
