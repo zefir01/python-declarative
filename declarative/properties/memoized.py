@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 """
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
 from declarative.module.module import ResourceFunction, Module
 from declarative.module.wraper import Wrapper
@@ -46,22 +46,22 @@ class MemoizedDescriptor(object):
 
         result = obj.__dict__.get(self.__name__, None)
         if result is None:
-            prev = obj.store.get_res()
             print("Creating " + obj.name + "." + self.__name__)
-            if check_function(self.fget, Callable[[Module], str]):
+            if check_function(self.fget, Callable[[Module], Any]):
                 pass_prev = False
-            elif check_function(self.fget, Callable[[Module, str], str]) \
-                    or check_function(self.fget, Callable[[Module, Optional[str]], str]):
+            elif check_function(self.fget, Callable[[Module, str], Any]) \
+                    or check_function(self.fget, Callable[[Module, Optional[str]], Any]):
                 pass_prev = True
             elif check_function(self.fget, Callable[[Module], Module]):
                 pass_prev = False
-            elif check_function(self.fget, Callable[[Module, str], Module]) \
-                    or check_function(self.fget, Callable[[Module, Optional[str]], Module]):
+            elif check_function(self.fget, Callable[[Module, str], Any]) \
+                    or check_function(self.fget, Callable[[Module, Optional[str]], Any]):
                 pass_prev = True
             else:
                 raise UnknownMethodSignatureException(obj.name + "." + self.__name__)
             try:
                 if pass_prev:
+                    prev = obj.store.get_res()
                     result = self.fget(obj, prev)
                 else:
                     result = self.fget(obj)
