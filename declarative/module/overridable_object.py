@@ -19,6 +19,10 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
     def name(self):
         pass
 
+    @abstractmethod
+    def parent(self):
+        pass
+
     def _overridable_object_inject(self, **kwargs):
         """
         """
@@ -66,17 +70,10 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
                 ).format(self.__class__.__name__, list(kwargs_unmatched.keys()))
             )
 
-        # now run the __mid_init__ before all of the declarative arguments trigger
-        self.__mid_init__()
         # super(OverridableObject, self).__init__()
-        # print("OO: ", self)
         return
 
     def init(self):
-        print("Creating", self.name)
+        if self.parent is None:
+            print("Creating", self.name)
         super(OverridableObject, self).__init__()
-
-    def __mid_init__(self):
-        """
-        """
-        return

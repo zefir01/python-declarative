@@ -2,31 +2,7 @@
 """
 """
 from declarative.module.module import ResourceFunction, Module
-from declarative.module.resource import Resource
 from declarative.module.wraper import Wrapper
-
-
-class ClassMemoizedDescriptor(object):
-    """
-    Works like a combination of :obj:`property` and :obj:`classmethod` as well as :obj:`~.memoized_property`
-    """
-
-    def __init__(self, fget, doc=None):
-        self.fget = fget
-        self.__doc__ = doc or fget.__doc__
-        self.__name__ = fget.__name__
-
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-        result = self.fget(cls)
-        setattr(cls, self.__name__, result)
-        return result
-
-
-memoized_class_property = ClassMemoizedDescriptor
-
-
 
 
 class MemoizedDescriptor(object):
@@ -51,23 +27,18 @@ class MemoizedDescriptor(object):
             return self
 
         def register(res):
-            if issubclass(res.__class__, Resource):
-                result.parent = obj
-                result.name = obj.name + "." + self.__name__
             if issubclass(res.__class__, Module):
+                result.name = obj.name + "." + self.__name__
+                result.parent = obj
                 result.init()
             obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, res)
 
         result = obj.__dict__.get(self.__name__, None)
         if result is None:
             prev = obj.store.get_res()
-            if self.__name__ != "child_registry":
-                print("Creating " + obj.name + "." + self.__name__)
+            print("Creating " + obj.name + "." + self.__name__)
             try:
-                if self.__name__ == "child_registry":
-                    result = self.fget(obj)
-                    obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, result)
-                elif self.fget.__code__.co_argcount == 2:
+                if self.fget.__code__.co_argcount == 2:
                     result = self.fget(obj, prev)
                     register(result)
                 else:

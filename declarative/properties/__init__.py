@@ -8,7 +8,6 @@ from __future__ import (
 )
 
 from .memoized import (
-    memoized_class_property,
     resource,
     resource_pass_errors,
 )

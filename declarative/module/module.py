@@ -2,17 +2,16 @@ from abc import ABC
 from typing import Optional
 
 from .overridable_object import OverridableObject
-from .resource import Resource
 from .wraper import Wrapper
 
 
 class Store:
-    def get_res(self) -> Optional[Resource]:
-        return Resource()
+    def get_res(self) -> Optional[str]:
+        return ""
         # return None
 
 
-class Module(OverridableObject, ABC, Resource):
+class Module(OverridableObject, ABC):
     name = None
     store = Store()
     parent = None
@@ -51,5 +50,5 @@ class Module(OverridableObject, ABC, Resource):
 
 
 class ResourceFunction:
-    def __call__(self, module: Module, prev: Optional[Resource]) -> Optional[Resource]:
+    def __call__(self, module: Module, prev: Optional[str]) -> Optional[str]:
         pass
