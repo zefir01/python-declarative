@@ -37,13 +37,6 @@ class MemoizedDescriptor(object):
         if obj is None:
             return self
 
-        def register(res):
-            if issubclass(res.__class__, Module):
-                result.name = obj.name + "." + self.__name__
-                result.parent = obj
-                result.init()
-            obj.__dict__[self.__name__] = Wrapper(obj.name + "." + self.__name__, res, obj)
-
         result = obj.__dict__.get(self.__name__, None)
         if result is None:
             name = obj.name + "." + self.__name__
@@ -66,11 +59,12 @@ class MemoizedDescriptor(object):
                     result = self.fget(obj, prev)
                 else:
                     result = self.fget(obj)
-                register(result)
+                result = Wrapper(name, result, obj)
+                obj.__dict__[self.__name__] = result
             except Exception as e:
                 if prev is not None and self._use_prev:
                     result = prev
-                    register(result)
+                    obj.__dict__[self.__name__] = Wrapper(name, result, obj)
                     print(e)
                     print("Warning: {0} failed, using previous value".format(name))
                 else:

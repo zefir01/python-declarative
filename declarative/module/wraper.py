@@ -1,3 +1,4 @@
+from declarative.abstract.interfaces import Wrapper, Module
 from declarative.yaml.main import parse
 
 
@@ -9,7 +10,7 @@ class AccessFailedObjectException(Exception):
         super(AccessFailedObjectException, self).__init__("ERROR: Access to failed object: " + name)
 
 
-class Wrapper:
+class Wrapper(Wrapper):
     _name: str = None
     _value = None
     _error: Exception = None
@@ -41,6 +42,12 @@ class Wrapper:
         self._value = value
         self._error = error
         self._parent = parent
+
+        if issubclass(value.__class__, Module):
+            value.name = name
+            value.parent = parent
+            value.init()
+
         if self._error is not None:
             print("Warning, object failed: " + self._name)
             return

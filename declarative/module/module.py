@@ -3,15 +3,16 @@ from typing import Optional
 
 from .overridable_object import OverridableObject
 from .wraper import Wrapper
+from ..abstract.interfaces import Store, Module
 
 
-class Store:
+class Store(Store):
     def get_res(self) -> Optional[str]:
         return ""
         # return None
 
 
-class Module(OverridableObject, ABC):
+class Module(Module):
     name = None
     store = Store()
     parent = None
@@ -20,11 +21,11 @@ class Module(OverridableObject, ABC):
         self.name = name
         super(Module, self).__init__()
 
-    def _get_resources(self) -> set[Wrapper]:
+    def _get_resources(self):
         resources = set()
         for attr in self.__class__.__dict__:
             val = getattr(self, attr)
-            if not isinstance(val, Wrapper):
+            if not issubclass(val.__class__, Wrapper):
                 continue
             resources.add(val)
         return resources
