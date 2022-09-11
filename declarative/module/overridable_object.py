@@ -14,6 +14,7 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
     """
     _overridable_object_save_kwargs = False
     _overridable_object_kwargs = None
+    _initialized = False
 
     @abstractmethod
     def name(self):
@@ -74,6 +75,9 @@ class OverridableObject(HasDeclaritiveAttributes, SuperBase, object):
         return
 
     def init(self):
+        if self._initialized:
+            return
+        self._initialized = True
         if self.parent is None:
             print("Creating", self.name)
         super(OverridableObject, self).__init__()
