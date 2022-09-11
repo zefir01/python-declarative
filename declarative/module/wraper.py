@@ -55,7 +55,11 @@ class Wrapper(Wrapper):
                         value[i].parent = parent
                         value[i].init()
                 elif issubclass(value[0].__class__, str):
-                    raise NotImplemented()
+                    lst = []
+                    for i in range(len(value)):
+                        v = sanitize(value[i], f"{name}[{i}]")
+                        lst.append(v)
+                    self._value = "---\n".join(lst)
                 else:
                     raise UnknownReturnTypeException(name, value[0].__class__)
         elif value is not None:

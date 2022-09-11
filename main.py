@@ -54,9 +54,9 @@ class Parent(declarative.Module):
 
     @declarative.resource
     # @declarative.resource_pass_errors
-    def c2(self, prev: Optional[str]) -> str:
+    def c2(self, prev: Optional[str]):
         # raise Exception("Custom error")
-        return """
+        s = """
         apiVersion: v1
         kind: Service
         metadata:
@@ -69,6 +69,20 @@ class Parent(declarative.Module):
               port: 81
               targetPort: 9376
         """
+        s1 = """
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  generateName: service-
+                spec:
+                  selector:
+                    app.kubernetes.io/name: MyApp
+                  ports:
+                    - protocol: TCP
+                      port: 81
+                      targetPort: 9376
+                """
+        return [s, s1]
 
 
 class Root(declarative.Module):
@@ -90,4 +104,3 @@ for r in root.get_resources():
 print("\nErrors:")
 for e in root.get_errors():
     print(e.name, e.error)
-

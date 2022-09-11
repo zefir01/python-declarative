@@ -45,8 +45,6 @@ class Module(Module):
                 if issubclass(res()[0].__class__, Module):
                     for i in res():
                         resources = resources.union(i.get_resources())
-                elif isinstance(res()[0], str):
-                    NotImplemented()
                 else:
                     raise NotImplemented()
         if self.parent is None:
