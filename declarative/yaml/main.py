@@ -23,19 +23,19 @@ class Data(dict):
 def parse(res: str, name):
     _name = name.replace(".", "_")
     nc = type(_name, (Data,), {})
-    d = yaml.unsafe_load(res)
-    sanitize(d, _name)
+    d = yaml.safe_load(res)
     obj = nc(d)
     return obj
 
 
-def sanitize(res: dict, name: str):
-    l = name.split("_")
+def sanitize(res: str, name: str):
+    l = name.split(".")
     short_name = l[len(l) - 1]
+    d = yaml.safe_load(res)
     with suppress(KeyError):
-        del (res["metadata"]["name"])
+        del (d["metadata"]["name"])
     with suppress(KeyError):
-        del (res["metadata"]["generateName"])
-    res["metadata"]["generateName"] = short_name + "-"
-    y = yaml.dump(res)
-    pass
+        del (d["metadata"]["generateName"])
+    d["metadata"]["generateName"] = short_name + "-"
+    y = yaml.dump(d)
+    return y

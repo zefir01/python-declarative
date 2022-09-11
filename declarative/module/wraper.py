@@ -1,5 +1,7 @@
+import yaml
+
 from declarative.abstract.interfaces import Wrapper, Module
-from declarative.yaml.main import parse
+from declarative.yaml.main import parse, sanitize
 
 
 class AccessFailedObjectException(Exception):
@@ -39,7 +41,6 @@ class Wrapper(Wrapper):
 
     def __init__(self, name, value, parent, error=None):
         self._name = name
-        self._value = value
         self._error = error
         self._parent = parent
 
@@ -47,6 +48,8 @@ class Wrapper(Wrapper):
             value.name = name
             value.parent = parent
             value.init()
+        else:
+            self._value = sanitize(value, name)
 
         if self._error is not None:
             print("Warning, object failed: " + self._name)
