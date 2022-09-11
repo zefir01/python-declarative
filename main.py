@@ -7,7 +7,8 @@ class Parent(declarative.Module):
 
     @declarative.resource
     def c1(self):
-        return """
+        return """\
+        ---
         apiVersion: v1
         kind: Service
         metadata:
@@ -17,8 +18,21 @@ class Parent(declarative.Module):
             app.kubernetes.io/name: MyApp
           ports:
             - protocol: TCP
-              port: 81
+              port: 82
               targetPort: 9376
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          generateName: service-
+        spec:
+          selector:
+            app.kubernetes.io/name: MyApp
+          ports:
+            - protocol: TCP
+              port: 83
+              targetPort: 9376
+        ---
         """
 
     @declarative.resource
@@ -33,7 +47,7 @@ class Parent(declarative.Module):
             app.kubernetes.io/name: MyApp
           ports:
             - protocol: TCP
-              port: {self.c2.obj.spec.ports[0].port}
+              port: {self.c1.obj[0].spec.ports[0].port}
               targetPort: 9376
         """
         return res

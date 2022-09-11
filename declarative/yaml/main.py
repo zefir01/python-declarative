@@ -1,3 +1,4 @@
+import io
 from contextlib import suppress
 
 import yaml
@@ -22,20 +23,55 @@ class Data(dict):
 
 def parse(res: str, name):
     _name = name.replace(".", "_")
-    nc = type(_name, (Data,), {})
-    d = yaml.safe_load(res)
-    obj = nc(d)
+    d = list(yaml.full_load_all(res))
+    lst = list(filter(lambda item: item is not None, d))
+    if len(lst) == 1:
+        nc = type(_name, (Data,), {})
+        obj = nc(lst[0])
+    else:
+        obj = []
+        for i in range(len(lst)):
+            nc = type(_name + str(i), (Data,), {})
+            obj.append(nc(lst[i]))
     return obj
 
 
 def sanitize(res: str, name: str):
     l = name.split(".")
     short_name = l[len(l) - 1]
-    d = yaml.safe_load(res)
-    with suppress(KeyError):
-        del (d["metadata"]["name"])
-    with suppress(KeyError):
-        del (d["metadata"]["generateName"])
-    d["metadata"]["generateName"] = short_name + "-"
-    y = yaml.dump(d)
+    strings = res.split("\n")
+    min = 1000000
+    for s in strings:
+        count = 0
+        for i in range(len(s)):
+            if s[i] == " ":
+                count += 1
+        if count < min:
+            min = count
+    res = ""
+    for s in strings:
+        res += s[min:] + "\n"
+
+    lst = list(yaml.full_load_all(io.StringIO(res)))
+    lst = list(filter(lambda item: item is not None, lst))
+    for i in range(len(lst)):
+        item = lst[i]
+        if "metadata" not in item:
+            item["metadata"] = {}
+        with suppress(KeyError):
+            del (item["metadata"]["name"])
+        with suppress(KeyError):
+            del (item["metadata"]["generateName"])
+        if len(lst) > 1:
+            item["metadata"]["generateName"] = short_name + f"[{i}]-"
+        else:
+            item["metadata"]["generateName"] = short_name + "-"
+
+        if "annotations" not in item["metadata"]:
+            item["metadata"]["annotations"] = {}
+        if len(lst) > 1:
+            item["metadata"]["annotations"]["k-processor-name"] = name + f"[{i}]"
+        else:
+            item["metadata"]["annotations"]["k-processor-name"] = name
+    y = yaml.dump_all(lst)
     return y

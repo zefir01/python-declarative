@@ -48,14 +48,14 @@ class Wrapper(Wrapper):
             value.name = name
             value.parent = parent
             value.init()
-        else:
+        elif value is not None:
             self._value = sanitize(value, name)
 
         if self._error is not None:
             print("Warning, object failed: " + self._name)
             return
-        if self._value is not None and isinstance(value, str):
-            self._obj = parse(value, name)
+        if self._value is not None and isinstance(self._value, str):
+            self._obj = parse(self._value, name)
 
     def __call__(self, *args, **kwargs):
         if self._error is not None:
