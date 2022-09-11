@@ -41,6 +41,14 @@ class Module(Module):
         for res in resources:
             if issubclass(res().__class__, Module):
                 resources = resources.union(res().get_resources())
+            elif isinstance(res(), list):
+                if issubclass(res()[0].__class__, Module):
+                    for i in res():
+                        resources = resources.union(i.get_resources())
+                elif isinstance(res()[0], str):
+                    NotImplemented()
+                else:
+                    raise NotImplemented()
         if self.parent is None:
             resources.add(Wrapper(self.name, self, None))
         return resources

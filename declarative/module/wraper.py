@@ -1,4 +1,5 @@
 from declarative.abstract.interfaces import Wrapper, Module
+from declarative.properties.utilities import validate_list, UnknownReturnTypeException
 from declarative.yaml.main import parse, sanitize
 
 
@@ -11,11 +12,6 @@ class AccessFailedObjectException(Exception):
 
 
 class Wrapper(Wrapper):
-    # _name: str = None
-    # _value = None
-    # _error: Exception = None
-    # _parent = None
-    # _obj = None
 
     @property
     def name(self):
@@ -47,9 +43,24 @@ class Wrapper(Wrapper):
             value.name = name
             value.parent = parent
             value.init()
+        elif issubclass(value.__class__, list):
+            if len(value) == 0:
+                self._value = None
+            else:
+                validate_list(value, name)
+                if issubclass(value[0].__class__, Module):
+                    for i in range(len(value)):
+                        self._value = value
+                        value[i].name = f"{name}[{i}]"
+                        value[i].parent = parent
+                        value[i].init()
+                elif issubclass(value[0].__class__, str):
+                    raise NotImplemented()
+                else:
+                    raise UnknownReturnTypeException(name, value[0].__class__)
         elif value is not None:
             self._value = sanitize(value, name)
-            #print(self._value)
+            # print(self._value)
 
         if self._error is not None:
             print("Warning, object failed: " + self._name)

@@ -75,8 +75,9 @@ class Root(declarative.Module):
     @declarative.resource
     def m1(self, prev: Optional[str]):
         # raise Exception("Custom error")
-        child = Parent()
-        return child
+        child1 = Parent()
+        child2 = Parent()
+        return [child1, child2]
 
 
 root = Root("Root")
