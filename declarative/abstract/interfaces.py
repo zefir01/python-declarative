@@ -5,18 +5,19 @@ from declarative.module.overridable_object import OverridableObject
 
 
 class Store(ABC):
-    @abstractmethod
-    def get_res(self) -> Optional[str]:
+    #@abstractmethod
+    @staticmethod
+    def get_res(name: str) -> Optional[str]:
+        pass
+
+    @staticmethod
+    def get():
         pass
 
 
 class Module(OverridableObject, ABC):
     @abstractmethod
     def name(self):
-        pass
-
-    @abstractmethod
-    def store(self):
         pass
 
     @abstractmethod

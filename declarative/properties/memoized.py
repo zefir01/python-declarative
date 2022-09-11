@@ -4,6 +4,7 @@
 from typing import Callable, Optional, Any
 
 from declarative.module.module import Module
+from declarative.module.store import Store
 from declarative.module.wraper import Wrapper
 from declarative.properties.utilities import check_function
 
@@ -41,7 +42,7 @@ class MemoizedDescriptor(object):
         if result is None:
             name = obj.name + "." + self.__name__
             print("Creating", name)
-            prev = obj.store.get_res()
+            prev = Store.get().get_res(name)
             if check_function(self.fget, Callable[[Module], Any]):
                 pass_prev = False
             elif check_function(self.fget, Callable[[Module, str], Any]) \

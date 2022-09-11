@@ -1,25 +1,31 @@
-from abc import ABC
 from typing import Optional
 
-from .overridable_object import OverridableObject
 from .wraper import Wrapper
-from ..abstract.interfaces import Store, Module
-
-
-class Store(Store):
-    def get_res(self) -> Optional[str]:
-        return ""
-        # return None
+from ..abstract.interfaces import Module
 
 
 class Module(Module):
-    name = None
-    store = Store()
-    parent = None
 
     def __init__(self, name: Optional[str] = None):
-        self.name = name
+        self._name = name
+        self._parent = None
         super(Module, self).__init__()
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, value):
+        self._parent = value
 
     def _get_resources(self):
         resources = set()

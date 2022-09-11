@@ -11,11 +11,11 @@ class AccessFailedObjectException(Exception):
 
 
 class Wrapper(Wrapper):
-    _name: str = None
-    _value = None
-    _error: Exception = None
-    _parent = None
-    _obj = None
+    # _name: str = None
+    # _value = None
+    # _error: Exception = None
+    # _parent = None
+    # _obj = None
 
     @property
     def name(self):
