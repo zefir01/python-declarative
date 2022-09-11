@@ -49,7 +49,7 @@ class Wrapper(Wrapper):
             value.init()
         elif value is not None:
             self._value = sanitize(value, name)
-            print(self._value)
+            #print(self._value)
 
         if self._error is not None:
             print("Warning, object failed: " + self._name)
