@@ -1,5 +1,3 @@
-import yaml
-
 from declarative.abstract.interfaces import Wrapper, Module
 from declarative.yaml.main import parse, sanitize
 
@@ -45,11 +43,13 @@ class Wrapper(Wrapper):
         self._parent = parent
 
         if issubclass(value.__class__, Module):
+            self._value = value
             value.name = name
             value.parent = parent
             value.init()
         elif value is not None:
             self._value = sanitize(value, name)
+            print(self._value)
 
         if self._error is not None:
             print("Warning, object failed: " + self._name)
