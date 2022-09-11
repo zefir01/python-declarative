@@ -16,6 +16,7 @@ class Parent(declarative.Module):
 
     @declarative.resource
     def c1(self):
+        #raise Exception("Custom error")
         return """\
         ---
         apiVersion: v1
@@ -64,7 +65,7 @@ class Parent(declarative.Module):
     @declarative.resource
     # @declarative.resource_pass_errors
     def c2b(self, prev: Optional[str]):
-        # raise Exception("Custom error")
+        raise Exception("Custom error")
         s = """
         apiVersion: v1
         kind: Service
@@ -97,7 +98,7 @@ class Parent(declarative.Module):
 class Root(declarative.Module):
     @declarative.resource
     def m1(self, prev: Optional[str]):
-        # raise Exception("Custom error")
+        #raise Exception("Custom error")
         child1 = Parent()
         child2 = Parent()
         return [child1, child2]
@@ -105,7 +106,6 @@ class Root(declarative.Module):
 
 root = Root("Root")
 root.init()
-print(root.m1()[0].test)
 
 print("\nCreated:")
 for r in root.get_resources():

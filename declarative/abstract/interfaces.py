@@ -5,7 +5,7 @@ from declarative.module.overridable_object import OverridableObject
 
 
 class Store(ABC):
-    #@abstractmethod
+    # @abstractmethod
     @staticmethod
     def get_res(name: str) -> Optional[str]:
         pass
@@ -35,6 +35,10 @@ class Wrapper(ABC):
     def error(self):
         pass
 
-    @abstractmethod
-    def obj(self):
-        pass
+    # @abstractmethod
+    # def obj(self):
+    #     pass
+
+
+class MemoizedDescriptor(object):
+    pass

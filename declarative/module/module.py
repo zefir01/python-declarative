@@ -3,7 +3,15 @@ from typing import Optional
 import yaml
 
 from .wraper import Wrapper
-from ..abstract.interfaces import Module
+from ..abstract.interfaces import Module, MemoizedDescriptor
+
+
+class ModuleParameterException(Exception):
+
+    def __init__(self, name, parameter, e: Exception):
+        self.name = name
+        self.parameter = parameter
+        super(ModuleParameterException, self).__init__(f"ERROR: Parameter failed: {name}.{parameter}\n{e}")
 
 
 class module_property(property):
@@ -17,6 +25,7 @@ class Module(Module):
     def __init__(self, name: Optional[str] = None):
         self._name = name
         self._parent = None
+        self._parameter_errors = []
         super(Module, self).__init__()
 
     @property
@@ -34,6 +43,10 @@ class Module(Module):
     @parent.setter
     def parent(self, value):
         self._parent = value
+
+    @property
+    def parameter_errors(self):
+        return self._parameter_errors
 
     @property
     def yaml(self):
@@ -54,14 +67,21 @@ class Module(Module):
             }
         }
         for p in parameters_lst:
-            val = getattr(self, p)
-            y["spec"]["parameters"][p] = str(val)
+            try:
+                val = getattr(self, p)
+                y["spec"]["parameters"][p] = val
+            except Exception as e:
+                ee = ModuleParameterException(self._name, p, e)
+                self._parameter_errors.append(ee)
+                print(ee)
         s = yaml.dump(y)
         return s
 
     def _get_resources(self):
         resources = set()
         for attr in self.__class__.__dict__:
+            if not issubclass(self.__class__.__dict__[attr].__class__, MemoizedDescriptor):
+                continue
             val = getattr(self, attr)
             if not issubclass(val.__class__, Wrapper):
                 continue
@@ -91,4 +111,7 @@ class Module(Module):
                 errors.add(r)
             elif issubclass(r().__class__, Module):
                 errors = errors.union(r().get_errors())
+            elif isinstance(r(), list):
+                for i in r():
+                    errors = errors.union(i.get_errors())
         return errors

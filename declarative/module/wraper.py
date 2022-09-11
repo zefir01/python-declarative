@@ -31,6 +31,11 @@ class Wrapper(Wrapper):
     def yaml(self):
         if self._error is not None:
             raise AccessFailedObjectException(self._name)
+        return self._yaml
+
+    def _make_yaml(self):
+        if self._error is not None:
+            raise AccessFailedObjectException(self._name)
         if isinstance(self._value, str):
             return self._value
         elif issubclass(self._value.__class__, Module):
@@ -82,6 +87,7 @@ class Wrapper(Wrapper):
             return
         if self._value is not None and isinstance(self._value, str):
             self._obj = parse(self._value, name)
+        self._yaml = self._make_yaml()
 
     def __call__(self):
         if self._error is not None:

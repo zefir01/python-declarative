@@ -3,6 +3,7 @@
 """
 from typing import Callable, Optional, Any
 
+from declarative.abstract.interfaces import MemoizedDescriptor
 from declarative.module.module import Module
 from declarative.module.store import Store
 from declarative.module.wraper import Wrapper
@@ -17,7 +18,7 @@ class UnknownMethodSignatureException(Exception):
         super(UnknownMethodSignatureException, self).__init__("ERROR: Unknown method signature: " + name)
 
 
-class MemoizedDescriptor(object):
+class MemoizedDescriptor(MemoizedDescriptor):
     """
     wraps a member function just as :obj:`property` but saves its value after evaluation
     (and is thus only evaluated once)
@@ -66,14 +67,13 @@ class MemoizedDescriptor(object):
                 if prev is not None and self._use_prev:
                     result = Wrapper(name, prev, obj)
                     obj.__dict__[self.__name__] = result
-                    print(e)
+                    print("Exception: ", name, e)
                     print("Warning: {0} failed, using previous value".format(name))
                 else:
                     # print("Error in: {0}.{1}".format(obj.name, self.__name__))
-                    print(e)
+                    print("Exception: ", name, e)
                     result = Wrapper(name, None, obj, e)
                     obj.__dict__[self.__name__] = result
-                    return None
 
         return result
 
