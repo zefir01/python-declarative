@@ -1,9 +1,18 @@
 from typing import Optional
 
 import declarative
+from declarative.module.module import module_property
 
 
 class Parent(declarative.Module):
+
+    @module_property
+    def test(self):
+        return self.c1.obj[0].spec.ports[0].port
+
+    @test.setter
+    def test(self, value):
+        pass
 
     @declarative.resource
     def c1(self):
@@ -36,7 +45,7 @@ class Parent(declarative.Module):
         """
 
     @declarative.resource
-    def c2b(self, prev: Optional[str]):
+    def c2(self, prev: Optional[str]):
         res = f"""
         apiVersion: v1
         kind: Service
@@ -48,13 +57,13 @@ class Parent(declarative.Module):
           ports:
             - protocol: TCP
               port: {self.c1.obj[0].spec.ports[0].port}
-              targetPort: 9376
+              targetPort: {self.c2b.obj[1].spec.ports[0].port}
         """
         return res
 
     @declarative.resource
     # @declarative.resource_pass_errors
-    def c2(self, prev: Optional[str]):
+    def c2b(self, prev: Optional[str]):
         # raise Exception("Custom error")
         s = """
         apiVersion: v1
@@ -96,10 +105,12 @@ class Root(declarative.Module):
 
 root = Root("Root")
 root.init()
+print(root.m1()[0].test)
 
 print("\nCreated:")
 for r in root.get_resources():
-    print(r.name)
+    print(f"######################## {r.name} ########################")
+    print(r.yaml)
 
 print("\nErrors:")
 for e in root.get_errors():

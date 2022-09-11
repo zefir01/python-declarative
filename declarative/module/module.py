@@ -1,7 +1,15 @@
 from typing import Optional
 
+import yaml
+
 from .wraper import Wrapper
 from ..abstract.interfaces import Module
+
+
+class module_property(property):
+    def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+        super().__init__(fget, fset, fdel, doc)
+        self.module_property = True
 
 
 class Module(Module):
@@ -26,6 +34,30 @@ class Module(Module):
     @parent.setter
     def parent(self, value):
         self._parent = value
+
+    @property
+    def yaml(self):
+        l = self._name.split(".")
+        short_name = l[len(l) - 1]
+        parameters_lst = []
+        for attr in self.__class__.__dict__:
+            if attr is None:
+                continue
+            if issubclass(self.__class__.__dict__[attr].__class__, module_property):
+                parameters_lst.append(attr)
+        y = {
+            "apiVersion": "k-processor/v1",
+            "kind": "Module",
+            "metadata": f"{short_name}-",
+            "spec": {
+                "parameters": {}
+            }
+        }
+        for p in parameters_lst:
+            val = getattr(self, p)
+            y["spec"]["parameters"][p] = str(val)
+        s = yaml.dump(y)
+        return s
 
     def _get_resources(self):
         resources = set()

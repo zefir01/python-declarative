@@ -28,10 +28,21 @@ class Wrapper(Wrapper):
         return self._obj
 
     @property
-    def str(self):
+    def yaml(self):
         if self._error is not None:
             raise AccessFailedObjectException(self._name)
-        return self._value
+        if isinstance(self._value, str):
+            return self._value
+        elif issubclass(self._value.__class__, Module):
+            return self._value.yaml
+        elif isinstance(self._value, list):
+            lst = []
+            for i in self._value:
+                lst.append(i.yaml)
+            res = "---\n".join(lst)
+            return res
+        else:
+            raise UnknownReturnTypeException(self._name, self._value.__class__)
 
     def __init__(self, name, value, parent, error=None):
         self._name = name
@@ -72,7 +83,7 @@ class Wrapper(Wrapper):
         if self._value is not None and isinstance(self._value, str):
             self._obj = parse(self._value, name)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self):
         if self._error is not None:
             raise AccessFailedObjectException(self._name)
         return self._value

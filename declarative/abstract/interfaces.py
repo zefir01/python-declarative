@@ -38,7 +38,3 @@ class Wrapper(ABC):
     @abstractmethod
     def obj(self):
         pass
-
-    @abstractmethod
-    def str(self):
-        pass
