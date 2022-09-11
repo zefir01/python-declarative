@@ -63,14 +63,15 @@ class MemoizedDescriptor(object):
                 obj.__dict__[self.__name__] = result
             except Exception as e:
                 if prev is not None and self._use_prev:
-                    result = prev
-                    obj.__dict__[self.__name__] = Wrapper(name, result, obj)
+                    result = Wrapper(name, prev, obj)
+                    obj.__dict__[self.__name__] = result
                     print(e)
                     print("Warning: {0} failed, using previous value".format(name))
                 else:
                     # print("Error in: {0}.{1}".format(obj.name, self.__name__))
                     print(e)
-                    obj.__dict__[self.__name__] = Wrapper(name, result, obj, e)
+                    result = Wrapper(name, None, obj, e)
+                    obj.__dict__[self.__name__] = result
                     return None
 
         return result

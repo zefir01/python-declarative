@@ -51,7 +51,7 @@ class Wrapper(Wrapper):
         if self._error is not None:
             print("Warning, object failed: " + self._name)
             return
-        if isinstance(value, str):
+        if self._value is not None and isinstance(value, str):
             self._obj = parse(value, name)
 
     def __call__(self, *args, **kwargs):
