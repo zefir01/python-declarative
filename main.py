@@ -76,4 +76,3 @@ print("\nErrors:")
 for e in root.get_errors():
     print(e.name, e.error)
 
-# TODO:

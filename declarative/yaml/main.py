@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 import yaml
 
 
@@ -22,5 +24,18 @@ def parse(res: str, name):
     _name = name.replace(".", "_")
     nc = type(_name, (Data,), {})
     d = yaml.unsafe_load(res)
+    sanitize(d, _name)
     obj = nc(d)
     return obj
+
+
+def sanitize(res: dict, name: str):
+    l = name.split("_")
+    short_name = l[len(l) - 1]
+    with suppress(KeyError):
+        del (res["metadata"]["name"])
+    with suppress(KeyError):
+        del (res["metadata"]["generateName"])
+    res["metadata"]["generateName"] = short_name + "-"
+    y = yaml.dump(res)
+    pass
