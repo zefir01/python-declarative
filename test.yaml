@@ -2,7 +2,35 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    k-processor-name: Root.m1.c1[0]
+    k-processor-name: Root.m1[0].c2b[0]
+  generateName: c2b[0]-
+spec:
+  ports:
+  - port: 81
+    protocol: TCP
+    targetPort: 9376
+  selector:
+    app.kubernetes.io/name: MyApp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    k-processor-name: Root.m1[0].c2b[1]
+  generateName: c2b[1]-
+spec:
+  ports:
+  - port: 81
+    protocol: TCP
+    targetPort: 9376
+  selector:
+    app.kubernetes.io/name: MyApp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    k-processor-name: Root.m1[1].c1[0]
   generateName: c1[0]-
 spec:
   ports:
@@ -16,7 +44,64 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    k-processor-name: Root.m1.c1[1]
+    k-processor-name: Root.m1[1].c1[1]
+  generateName: c1[1]-
+spec:
+  ports:
+  - port: 83
+    protocol: TCP
+    targetPort: 9376
+  selector:
+    app.kubernetes.io/name: MyApp
+---
+apiVersion: k-processor/v1
+kind: Module
+metadata:
+  annotations:
+    k-processor-name: Root.m1[0]
+  generateName: m1[0]-
+spec:
+  parameters:
+    test: 82
+---
+apiVersion: k-processor/v1
+kind: Module
+metadata:
+  annotations:
+    k-processor-name: Root.m1[1]
+  generateName: m1[1]-
+spec:
+  parameters:
+    test: 82
+---
+apiVersion: k-processor/v1
+kind: Module
+metadata:
+  annotations:
+    k-processor-name: Root
+  generateName: Root-
+spec:
+  parameters: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    k-processor-name: Root.m1[0].c1[0]
+  generateName: c1[0]-
+spec:
+  ports:
+  - port: 82
+    protocol: TCP
+    targetPort: 9376
+  selector:
+    app.kubernetes.io/name: MyApp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    k-processor-name: Root.m1[0].c1[1]
   generateName: c1[1]-
 spec:
   ports:
@@ -30,8 +115,8 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    k-processor-name: Root.m1.c2
-  generateName: c2-
+    k-processor-name: Root.m1[1].c2b[0]
+  generateName: c2b[0]-
 spec:
   ports:
   - port: 81
@@ -44,12 +129,40 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    k-processor-name: Root.m1.c2b
-  generateName: c2b-
+    k-processor-name: Root.m1[1].c2b[1]
+  generateName: c2b[1]-
+spec:
+  ports:
+  - port: 81
+    protocol: TCP
+    targetPort: 9376
+  selector:
+    app.kubernetes.io/name: MyApp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    k-processor-name: Root.m1[0].c2
+  generateName: c2-
 spec:
   ports:
   - port: 82
     protocol: TCP
-    targetPort: 9376
+    targetPort: 81
+  selector:
+    app.kubernetes.io/name: MyApp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    k-processor-name: Root.m1[1].c2
+  generateName: c2-
+spec:
+  ports:
+  - port: 82
+    protocol: TCP
+    targetPort: 81
   selector:
     app.kubernetes.io/name: MyApp

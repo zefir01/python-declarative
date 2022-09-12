@@ -61,7 +61,12 @@ class Module(Module):
         y = {
             "apiVersion": "k-processor/v1",
             "kind": "Module",
-            "metadata": f"{short_name}-",
+            "metadata": {
+                "generateName": f"{short_name}-",
+                "annotations": {
+                    "k-processor-name": self._name
+                }
+            },
             "spec": {
                 "parameters": {}
             }

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 """
-from typing import Callable, Optional, Any
+from typing import Callable, Any
 
 from declarative.abstract.interfaces import MemoizedDescriptor
 from declarative.module.module import Module
@@ -44,16 +44,10 @@ class MemoizedDescriptor(MemoizedDescriptor):
             name = obj.name + "." + self.__name__
             print("Creating", name)
             prev = Store.get().get_res(name)
-            if check_function(self.fget, Callable[[Module], Any]):
-                pass_prev = False
-            elif check_function(self.fget, Callable[[Module, str], Any]) \
-                    or check_function(self.fget, Callable[[Module, Optional[str]], Any]):
+            if check_function(self.fget, Callable[[Module, Any], Any]):
                 pass_prev = True
-            elif check_function(self.fget, Callable[[Module], Module]):
+            elif check_function(self.fget, Callable[[Module], Any]):
                 pass_prev = False
-            elif check_function(self.fget, Callable[[Module, str], Any]) \
-                    or check_function(self.fget, Callable[[Module, Optional[str]], Any]):
-                pass_prev = True
             else:
                 raise UnknownMethodSignatureException(name)
             try:

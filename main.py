@@ -1,5 +1,3 @@
-from typing import Optional
-
 import declarative
 from declarative.module.module import module_property
 
@@ -16,7 +14,7 @@ class Parent(declarative.Module):
 
     @declarative.resource
     def c1(self):
-        #raise Exception("Custom error")
+        # raise Exception("Custom error")
         return """\
         ---
         apiVersion: v1
@@ -46,7 +44,7 @@ class Parent(declarative.Module):
         """
 
     @declarative.resource
-    def c2(self, prev: Optional[str]):
+    def c2(self, prev=None):
         res = f"""
         apiVersion: v1
         kind: Service
@@ -64,8 +62,8 @@ class Parent(declarative.Module):
 
     @declarative.resource
     # @declarative.resource_pass_errors
-    def c2b(self, prev: Optional[str]):
-        raise Exception("Custom error")
+    def c2b(self, prev=None):
+        # raise Exception("Custom error")
         s = """
         apiVersion: v1
         kind: Service
@@ -97,8 +95,8 @@ class Parent(declarative.Module):
 
 class Root(declarative.Module):
     @declarative.resource
-    def m1(self, prev: Optional[str]):
-        #raise Exception("Custom error")
+    def m1(self, prev=None):
+        # raise Exception("Custom error")
         child1 = Parent()
         child2 = Parent()
         return [child1, child2]
@@ -108,9 +106,12 @@ root = Root("Root")
 root.init()
 
 print("\nCreated:")
+lst = []
 for r in root.get_resources():
-    print(f"######################## {r.name} ########################")
-    print(r.yaml)
+    # print(f"######################## {r.name} ########################")
+    lst.append(r.yaml)
+y = "---\n".join(lst)
+print(y)
 
 print("\nErrors:")
 for e in root.get_errors():

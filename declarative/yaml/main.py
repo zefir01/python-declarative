@@ -5,8 +5,13 @@ import yaml
 
 
 class Data(dict):
+    @property
+    def yaml(self):
+        return self._yaml
+
     def __init__(self, dictionary):
         super().__init__()
+        self._yaml = yaml.dump(dictionary)
         self.update(dictionary)
         self.__dict__.update(dictionary)
         for a in dictionary.keys():
@@ -21,18 +26,27 @@ class Data(dict):
                         value[i] = t(value[i])
 
 
-def parse(res: str, name):
+def _make_object(d, name, index=None):
     _name = name.replace(".", "_")
+    if index is None:
+        nc = type(_name, (Data,), {})
+    else:
+        nc = type(_name + str(index), (Data,), {})
+    return nc(d)
+
+
+def parse(res: str, name):
+    if res is None or res == "":
+        return None
     d = list(yaml.full_load_all(res))
     lst = list(filter(lambda item: item is not None, d))
     if len(lst) == 1:
-        nc = type(_name, (Data,), {})
-        obj = nc(lst[0])
+        obj = _make_object(lst[0], name)
     else:
         obj = []
         for i in range(len(lst)):
-            nc = type(_name + str(i), (Data,), {})
-            obj.append(nc(lst[i]))
+            t = _make_object(lst[i], name, i)
+            obj.append(t)
     return obj
 
 
