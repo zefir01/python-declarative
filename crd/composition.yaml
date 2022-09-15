@@ -1,0 +1,22 @@
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: CompositeController
+metadata:
+  name: test-chart
+spec:
+  generateSelector: true
+  resyncPeriodSeconds: 10
+  parentResource:
+    apiVersion: k-processor.io/v1
+    resource: charts
+    revisionHistory:
+      fieldPaths:
+      - spec.template
+  childResources:
+  - apiVersion: v1
+    resource: services
+  hooks:
+    sync:
+      webhook:
+        url: http://echoserver.test-payload.svc/chart-composite
+        timeout: 10s
+status: {}

@@ -1,0 +1,48 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: modules.k-processor.io
+spec:
+  group: k-processor.io
+  scope: Namespaced
+  names:
+    plural: modules
+    singular: module
+    kind: Module
+    shortNames: [ "m" ]
+    categories:
+      - all
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      subresources:
+        status: { }
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              x-kubernetes-preserve-unknown-fields: true
+              type: object
+              description: Module input variables
+            status:
+              type: object
+              properties:
+                outputs:
+                  x-kubernetes-preserve-unknown-fields: true
+                  type: object
+                  description: Module output variables
+                childResourcesError:
+                  type: boolean
+                  description: True if the hook's list of child resource types does not match the module's child resources
+                childResources:
+                  description: List of child resource types of a module
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      apiVersion:
+                        type: string
+                      resource:
+                        type: string

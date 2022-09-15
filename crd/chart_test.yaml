@@ -1,0 +1,7 @@
+apiVersion: k-processor.io/v1
+kind: Chart
+metadata:
+  name: test-chart
+spec:
+  repository:
+    uri: ""
